@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import  Shot  from "./Shot";
 
 export function Board() {
   const [cordinates, setCordinates] = useState<[number, number] | null>(null);
@@ -37,13 +38,12 @@ export function Board() {
 
   return (
     <>
-      {/* {console.log("cordinates", cordinates)} */}
-
       <div className="flex flex-col items-center">
         <h4 className="text-2xl font-bold mb-4 text-center">Player ID:</h4>
         <table className="table-auto border border-gray-300">
           <tbody>{generateBoard()}</tbody>
         </table>
+        <Shot />
       </div>
     </>
   );
