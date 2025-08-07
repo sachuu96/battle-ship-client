@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import axios, { AxiosInstance, AxiosResponse } from "axios";
 
 class HttpClient {
   private static instance: AxiosInstance;
@@ -8,14 +8,28 @@ class HttpClient {
   public static getInstance(): AxiosInstance {
     if (!HttpClient.instance) {
       HttpClient.instance = axios.create({
-        baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4000/api',
+        baseURL:
+          process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000/api",
         timeout: 5000,
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
 
-    //   TODO: add an intercepter to attach session header
+      HttpClient.instance.interceptors.request.use(
+        (config) => {
+          if (typeof window !== "undefined") {
+            const token = localStorage.getItem("session");
+            if (token) {
+              config.headers["session"] = token;
+            }
+          }
+          return config;
+        },
+        (error) => {
+          return Promise.reject(error);
+        }
+      );
 
       HttpClient.instance.interceptors.response.use(
         (response: AxiosResponse) => response,
