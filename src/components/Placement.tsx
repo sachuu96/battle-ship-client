@@ -3,7 +3,9 @@
 import { useState, useEffect } from "react";
 import { createShips, fetchShipPlacement } from "../services/shipService";
 import ShipPlacementForm from "./ShipPlacementForm";
-import { Board } from "./Board";
+import { ShipBoard } from "./ShipBoard";
+import Shot from "./Shot";
+
 
 interface PlacementProps {
   playerId: number;
@@ -123,7 +125,17 @@ export const Placement = ({ playerId }: PlacementProps) => {
           </form>
         </div>
       ) : (
-        <Board playerId={playerId} shipPlacement={createdShipCoordinates} />
+        <>
+          <p>Your ship placement</p>
+          <ShipBoard
+            playerId={playerId}
+            shipPlacement={createdShipCoordinates}
+          />
+          <p>Attack Board</p>
+        <Shot />
+
+          {/* <AttackBoard/>  */}
+        </>
       )}
     </>
   );

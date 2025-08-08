@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Board } from "./Board";
+import { ShipBoard } from "./ShipBoard";
 import { Placement } from "./Placement";
 import { startGame, getGame } from "../services/gameService";
 import { fetchPlayers } from "../services/playerService";

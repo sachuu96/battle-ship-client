@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Shot from "./Shot";
+import { Grid } from './Grid'
 import { fetchShipPlacement } from "../services/shipService";
 import cloneDeep from "lodash.clonedeep";
 
@@ -52,27 +52,27 @@ interface Cell {
   isShipAvailable: boolean;
 }
 
-export function Board({ playerId, shipPlacement }: BoardProps) {
+export function ShipBoard({ playerId, shipPlacement }: BoardProps) {
   // used lazy initialization to improve performance
-  const [cordinates, setCordinates] = useState(generateInitalBoard);
+  const [coordinates, setcoordinates] = useState(generateInitalBoard);
   const [shipCoordinates, setShipCoordinates] = useState(shipPlacement);
 
   useEffect(() => {
-    // get ship placement cordinates for given player
-    const fetchShipCordinates = async () => {
+    // get ship placement coordinates for given player
+    const fetchShipcoordinates = async () => {
       const response = await fetchShipPlacement(playerId);
       setShipCoordinates(response);
     };
-    fetchShipCordinates();
+    fetchShipcoordinates();
   }, []);
 
   useEffect(() => {
     if (shipCoordinates && shipCoordinates.length > 0) {
       // Deep clone the board before mutating to avoid state mutation issues
-      const updatedBoard = cloneDeep(cordinates)
-      cloneDeep
+      const updatedBoard = cloneDeep(coordinates)
+      // cloneDeep
       const updatedCoordinates = markShipCells(updatedBoard, shipCoordinates);
-      setCordinates(updatedCoordinates);
+      setcoordinates(updatedCoordinates);
     }
   }, [shipCoordinates]);
 
@@ -82,40 +82,7 @@ export function Board({ playerId, shipPlacement }: BoardProps) {
   return (
     <>
       <div className="flex flex-col items-center">
-        <table className="table-auto border border-gray-300">
-          <tbody>
-            {cordinates.map((rows, index) => {
-              return (
-                <tr key={`row-${rows}-${index}`} className="bg-gray-100">
-                  {rows.map(({ x, y, isShipAvailable, status }: any) => {
-                    const isDisabled = isShipAvailable === true;
-                    return (
-                      <td
-                        key={`cell-${x}-${y}`}
-                        className={`border border-gray-300 px-4 py-2 text-center align-middle cursor-pointer 
-                ${
-                  isDisabled
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "hover:bg-gray-200"
-                }`}
-                        onClick={() => {
-                          if (!isDisabled) {
-                            onClickCell([x, y]);
-                          }
-                        }}
-                      >
-                        <h3 className="flex justify-center items-center h-full">
-                          {isShipAvailable ? "Ship" : `[${x}, ${y}]`}
-                        </h3>
-                      </td>
-                    );
-                  })}
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-        <Shot />
+        <Grid coordinates={coordinates}/>
       </div>
     </>
   );
