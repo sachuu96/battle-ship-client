@@ -2,18 +2,31 @@
 import { useEffect, useState } from "react";
 import { Board } from "./Board";
 import { Placement } from "./Placement";
-import { startGame } from "../services/gameService";
+import { startGame, getGame } from "../services/gameService";
 import { fetchPlayers } from "../services/playerService";
 
 export function Welcome() {
   const [players, setPlayers] = useState([]);
+  const [gameStatus, setGameStatus] = useState(null);
 
   useEffect(() => {
-    const getAllPlayers = async () => {
-      const response = await fetchPlayers();
-      setPlayers(response);
-    };
-    getAllPlayers();
+    // chain since response of first api call is dependent to the next one.
+    getGame()
+      .then((data) => {
+        if (data) {
+          fetchPlayers()
+            .then((players) => {
+              setPlayers(players);
+            })
+            .catch((error) => {
+              // TODO: proper error display for UI
+              console.log("error while fetching players: ", error);
+            });
+        }
+      })
+      .catch((error) => {
+        console.log("error while fetching game: ", error);
+      });
   }, []);
 
   const onClick = async () => {

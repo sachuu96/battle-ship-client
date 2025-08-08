@@ -12,3 +12,15 @@ export async function startGame() {
     throw error;
   }
 }
+
+export async function getGame() {
+  const axios = HttpClient.getInstance();
+
+  try {
+    const response = await axios.get("/games");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching game details:", error);
+    throw error;
+  }
+}

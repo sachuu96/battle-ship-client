@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Shot from "./Shot";
 
 interface BoardProps {
@@ -10,6 +10,9 @@ interface BoardProps {
 export function Board({ playerId }: BoardProps) {
   const [cordinates, setCordinates] = useState<[number, number] | null>(null);
 
+  useEffect(()=>{
+    // get ship placement cordinates for given player
+  },[])
   const generateBoard = () => {
     const board = [];
 

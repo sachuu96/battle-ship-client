@@ -3,10 +3,19 @@
 import { useState } from "react";
 import { createShips } from "../services/shipService";
 import ShipPlacementForm from "./ShipPlacementForm";
+import { Board } from "./Board";
 
 interface PlacementProps {
   playerId: number;
 }
+// interface Coordinates {
+//   X: number;
+//   Y: number;
+// }
+// interface ShipPlacement extends Coordinates {
+//   shipId: number;
+// }
+
 export const Placement = ({ playerId }: PlacementProps) => {
   const [battleShipCells, setBattleShipCells] = useState([
     { x: "", y: "" },
@@ -27,7 +36,8 @@ export const Placement = ({ playerId }: PlacementProps) => {
     { x: "", y: "" },
   ]);
 
-  const [createdShips, setCreatedShips] = useState(null);
+  const [createdShips, setCreatedShips] =
+    useState(null);
 
   const handleBattleShipCellChange = (
     index: number,
@@ -59,6 +69,17 @@ export const Placement = ({ playerId }: PlacementProps) => {
     setDestroyerShip2(newCells);
   };
 
+  // TODO: set proper types
+  // const extractCoordinates = (ships: Array<any>) => {
+  //   const cellCoordinates: any = [];
+  //   ships.map(({ cells, shipId }) => {
+  //     cells.map(({ X, Y }: Coordinates) => {
+  //       cellCoordinates.push({ x: X, y: Y, shipId });
+  //     });
+  //   });
+  //   setShipPlacementCoordinates(cellCoordinates);
+  // };
+
   const createShipPlacement = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Submitted battleShipCells:", battleShipCells);
@@ -73,6 +94,8 @@ export const Placement = ({ playerId }: PlacementProps) => {
       ],
     };
     const createdShips = await createShips(playerId, payload);
+    console.log('createdShips',createdShips);
+    // extractCoordinates(createdShips);
     setCreatedShips(createdShips);
   };
 
@@ -109,6 +132,7 @@ export const Placement = ({ playerId }: PlacementProps) => {
           </button>
         </form>
       )}
+      {/* <Board /> */}
     </div>
   );
 };
