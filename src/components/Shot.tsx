@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getShotsCount } from "../services/shoService";
+import { getShotsCount } from "../services/shotService";
 
 export default function Shot({ playerId = 2 }) {
   const [shotDetails, setShotDetails] = useState<Record<string,any> | null>(null);
