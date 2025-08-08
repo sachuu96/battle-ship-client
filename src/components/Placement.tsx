@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { createShips, fetchShipPlacement } from "../services/shipService";
 import ShipPlacementForm from "./ShipPlacementForm";
 import { ShipBoard } from "./ShipBoard";
+import { AttackBoard } from "./AttackBoard";
 import Shot from "./Shot";
 
 
@@ -86,13 +87,12 @@ export const Placement = ({ playerId }: PlacementProps) => {
       ],
     };
     const createdShips = await createShips(playerId, payload);
-    // console.log("createdShips", createdShips);
     setCreatedShipCoordinates(createdShips);
   };
 
   return (
     <>
-      {createdShipCoordinates.length === 0 ? (
+      {createdShipCoordinates && createdShipCoordinates.length === 0 ? (
         <div className="p-6 bg-white rounded-xl shadow-md max-w-md mx-auto mt-8">
           <form
             onSubmit={createShipPlacement}
@@ -132,9 +132,10 @@ export const Placement = ({ playerId }: PlacementProps) => {
             shipPlacement={createdShipCoordinates}
           />
           <p>Attack Board</p>
+          <AttackBoard playerId={playerId}/> 
+
         <Shot />
 
-          {/* <AttackBoard/>  */}
         </>
       )}
     </>

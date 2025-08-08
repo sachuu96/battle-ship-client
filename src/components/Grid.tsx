@@ -9,6 +9,12 @@ interface IGridProps {
 }
 
 export const Grid = ({ coordinates, onClickCell }: any) => {
+  const generateCellContent = ({ isShipAvailable, status, x, y }: any) => {
+    if (isShipAvailable) return "Ship";
+    if (status === "missed") return "Missed";
+    if (status === "hit") return "Hit";
+    if (status === "intact") return `[${x},${y}]`;
+  };
   return (
     <table className="table-auto border border-gray-300">
       <tbody>
@@ -28,12 +34,12 @@ export const Grid = ({ coordinates, onClickCell }: any) => {
                 }`}
                     onClick={() => {
                       if (!isDisabled) {
-                        onClickCell?.([x, y]);
+                        onClickCell?.({ x, y });
                       }
                     }}
                   >
                     <h3 className="flex justify-center items-center h-full">
-                      {isShipAvailable ? "Ship" : `[${x}, ${y}]`}
+                        {generateCellContent({x, y, isShipAvailable, status})}
                     </h3>
                   </td>
                 );

@@ -38,3 +38,17 @@ export async function attackCell(playerId: number, payload: CreateShot, options?
     throw error;
   }
 }
+
+export async function fetchAllShots(playerId:number){
+  const axios = HttpClient.getInstance();
+
+  try {
+    const response = await axios.get(`/shots/${playerId}`);
+
+    // console.log('response',response)
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching shot count:", error);
+    throw error;
+  }
+}

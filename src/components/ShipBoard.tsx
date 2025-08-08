@@ -69,16 +69,13 @@ export function ShipBoard({ playerId, shipPlacement }: BoardProps) {
   useEffect(() => {
     if (shipCoordinates && shipCoordinates.length > 0) {
       // Deep clone the board before mutating to avoid state mutation issues
-      const updatedBoard = cloneDeep(coordinates)
-      // cloneDeep
-      const updatedCoordinates = markShipCells(updatedBoard, shipCoordinates);
+      const clonedCoordinates = cloneDeep(coordinates)
+
+      const updatedCoordinates = markShipCells(clonedCoordinates, shipCoordinates);
       setcoordinates(updatedCoordinates);
     }
   }, [shipCoordinates]);
 
-  const onClickCell = (value: any) => {
-    console.log("value", value);
-  };
   return (
     <>
       <div className="flex flex-col items-center">
