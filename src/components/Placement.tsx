@@ -1,20 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import { createShips } from "../services/shipService";
+import { useState, useEffect } from "react";
+import { createShips, fetchShipPlacement } from "../services/shipService";
 import ShipPlacementForm from "./ShipPlacementForm";
 import { Board } from "./Board";
 
 interface PlacementProps {
   playerId: number;
 }
-// interface Coordinates {
-//   X: number;
-//   Y: number;
-// }
-// interface ShipPlacement extends Coordinates {
-//   shipId: number;
-// }
 
 export const Placement = ({ playerId }: PlacementProps) => {
   const [battleShipCells, setBattleShipCells] = useState([
@@ -36,8 +29,16 @@ export const Placement = ({ playerId }: PlacementProps) => {
     { x: "", y: "" },
   ]);
 
-  const [createdShips, setCreatedShips] =
-    useState(null);
+  const [createdShipCoordinates, setCreatedShipCoordinates] = useState([]);
+
+  useEffect(() => {
+    // get ship placement cordinates for given player
+    const fetchShipCordinates = async () => {
+      const response = await fetchShipPlacement(playerId);
+      setCreatedShipCoordinates(response);
+    };
+    fetchShipCordinates();
+  }, []);
 
   const handleBattleShipCellChange = (
     index: number,
@@ -69,22 +70,11 @@ export const Placement = ({ playerId }: PlacementProps) => {
     setDestroyerShip2(newCells);
   };
 
-  // TODO: set proper types
-  // const extractCoordinates = (ships: Array<any>) => {
-  //   const cellCoordinates: any = [];
-  //   ships.map(({ cells, shipId }) => {
-  //     cells.map(({ X, Y }: Coordinates) => {
-  //       cellCoordinates.push({ x: X, y: Y, shipId });
-  //     });
-  //   });
-  //   setShipPlacementCoordinates(cellCoordinates);
-  // };
-
   const createShipPlacement = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Submitted battleShipCells:", battleShipCells);
-    console.log("Submitted destroyerShip1:", destroyerShip1);
-    console.log("Submitted destroyerShip2:", destroyerShip2);
+    // console.log("Submitted battleShipCells:", battleShipCells);
+    // console.log("Submitted destroyerShip1:", destroyerShip1);
+    // console.log("Submitted destroyerShip2:", destroyerShip2);
 
     const payload = {
       ships: [
@@ -94,45 +84,47 @@ export const Placement = ({ playerId }: PlacementProps) => {
       ],
     };
     const createdShips = await createShips(playerId, payload);
-    console.log('createdShips',createdShips);
-    // extractCoordinates(createdShips);
-    setCreatedShips(createdShips);
+    // console.log("createdShips", createdShips);
+    setCreatedShipCoordinates(createdShips);
   };
 
   return (
-    <div className="p-6 bg-white rounded-xl shadow-md max-w-md mx-auto mt-8">
-      {!createdShips && (
-        <form
-          onSubmit={createShipPlacement}
-          className="p-6 bg-white rounded-xl shadow-md max-w-md mx-auto mt-8"
-        >
-          <ShipPlacementForm
-            title="Create Battleship"
-            description="Enter the X and Y coordinates for each of the 4 cells (values 0–9)."
-            handleChange={handleBattleShipCellChange}
-            cells={battleShipCells}
-          />
-          <ShipPlacementForm
-            title="Create destroyer ship - 1"
-            description="Enter the X and Y coordinates for each of the 3 cells (values 0–9)."
-            handleChange={handleFirstDestroyerShipCellChange}
-            cells={destroyerShip1}
-          />
-          <ShipPlacementForm
-            title="Create destroyer ship - 2"
-            description="Enter the X and Y coordinates for each of the 3 cells (values 0–9)."
-            handleChange={handleSecondDestroyerShipCellChange}
-            cells={destroyerShip2}
-          />
-          <button
-            type="submit"
-            className="w-full px-4 py-2 rounded-md bg-blue-600 text-white font-semibold shadow-md hover:bg-blue-700 transition"
+    <>
+      {createdShipCoordinates.length === 0 ? (
+        <div className="p-6 bg-white rounded-xl shadow-md max-w-md mx-auto mt-8">
+          <form
+            onSubmit={createShipPlacement}
+            className="p-6 bg-white rounded-xl shadow-md max-w-md mx-auto mt-8"
           >
-            Submit
-          </button>
-        </form>
+            <ShipPlacementForm
+              title="Create Battleship"
+              description="Enter the X and Y coordinates for each of the 4 cells (values 0–9)."
+              handleChange={handleBattleShipCellChange}
+              cells={battleShipCells}
+            />
+            <ShipPlacementForm
+              title="Create destroyer ship - 1"
+              description="Enter the X and Y coordinates for each of the 3 cells (values 0–9)."
+              handleChange={handleFirstDestroyerShipCellChange}
+              cells={destroyerShip1}
+            />
+            <ShipPlacementForm
+              title="Create destroyer ship - 2"
+              description="Enter the X and Y coordinates for each of the 3 cells (values 0–9)."
+              handleChange={handleSecondDestroyerShipCellChange}
+              cells={destroyerShip2}
+            />
+            <button
+              type="submit"
+              className="w-full px-4 py-2 rounded-md bg-blue-600 text-white font-semibold shadow-md hover:bg-blue-700 transition"
+            >
+              Submit
+            </button>
+          </form>
+        </div>
+      ) : (
+        <Board playerId={playerId} shipPlacement={createdShipCoordinates} />
       )}
-      {/* <Board /> */}
-    </div>
+    </>
   );
 };

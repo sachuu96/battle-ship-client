@@ -60,7 +60,7 @@ export function Welcome() {
               </h4>
               <Placement playerId={id} />
               {/* Show the board only once the ship placement is successfully completed*/}
-              <Board playerId={id} />
+              {/* <Board playerId={id} /> */}
             </div>
           ))}
         </div>
