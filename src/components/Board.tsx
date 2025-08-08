@@ -1,38 +1,9 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import Shot from "./Shot";
 import { fetchShipPlacement } from "../services/shipService";
-
-// const generateBoard = () => {
-//   const board = [];
-
-//   for (let y = 9; y >= 0; y--) {
-//     const row = [];
-
-//     for (let x = 0; x < 10; x++) {
-//       row.push(
-//         <td
-//           key={`cell-${y}-${x}`}
-//           className="border border-gray-300 px-4 py-2 text-center align-middle cursor-pointer"
-//           onClick={() => setCordinates([x, y])}
-//         >
-//           <h3 className="flex justify-center items-center h-full">
-//             [{x},{y}]
-//           </h3>
-//         </td>
-//       );
-//     }
-
-//     board.push(
-//       <tr key={`row-${y}`} className="bg-gray-100">
-//         {row}
-//       </tr>
-//     );
-//   }
-
-//   return board;
-// };
+import cloneDeep from "lodash.clonedeep";
 
 const generateInitalBoard = () => {
   const board = [];
@@ -95,17 +66,15 @@ export function Board({ playerId, shipPlacement }: BoardProps) {
     fetchShipCordinates();
   }, []);
 
-  // useEffect(() => {
-  //   if (shipCoordinates && shipCoordinates.length > 0) {
-  //     // Deep clone the board before mutating to avoid state mutation issues
-  //     const updatedBoard = cordinates.map((row) =>
-  //       row.map((cell) => ({ ...cell, isShipAvailable: false }))
-  //     );
-
-  //     const updatedCoordinates = markShipCells(updatedBoard, shipCoordinates);
-  //     setCordinates(updatedCoordinates);
-  //   }
-  // }, [shipCoordinates]);
+  useEffect(() => {
+    if (shipCoordinates && shipCoordinates.length > 0) {
+      // Deep clone the board before mutating to avoid state mutation issues
+      const updatedBoard = cloneDeep(cordinates)
+      cloneDeep
+      const updatedCoordinates = markShipCells(updatedBoard, shipCoordinates);
+      setCordinates(updatedCoordinates);
+    }
+  }, [shipCoordinates]);
 
   const onClickCell = (value: any) => {
     console.log("value", value);
