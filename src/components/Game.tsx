@@ -7,15 +7,19 @@ import { startGame } from "../services/gameService";
 interface IGameProps {
   initialPlayers: Record<string, number>[];
 }
-export const Game = ({
-  initialPlayers = [],
-}: IGameProps) => {
+export const Game = ({ initialPlayers = [] }: IGameProps) => {
   const [players, setPlayers] = useState(initialPlayers);
+  const [isLoading, setIsLoading] = useState(false);
 
   //   TODO: add loading and error states for better UX
   const onClick = async () => {
-    const players = await startGame();
-    setPlayers(players);
+    try {
+      setIsLoading(true);
+      const players = await startGame();
+      setPlayers(players);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -28,15 +32,16 @@ export const Game = ({
           <button
             className="px-6 py-3 rounded-xl bg-blue-600 text-white font-semibold shadow-md hover:bg-blue-700 transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             onClick={onClick}
+            disabled={isLoading}
           >
-            Start Game
+            {isLoading ? 'Setting up game...' :'Start Game'}
           </button>
         </div>
       )}
 
       {players && players.length > 0 && (
         <div className="w-full flex flex-wrap justify-center gap-12">
-          {players.map(({ id , shipPlacement}) => (
+          {players.map(({ id, shipPlacement, shotsTaken }) => (
             <div key={id} className="flex flex-col items-center gap-6">
               <h4 className="text-2xl font-bold mb-4 text-center">
                 Player ID: {id}
@@ -45,6 +50,7 @@ export const Game = ({
                 key={id}
                 playerId={id}
                 initialShipPlacement={shipPlacement}
+                initialShotsTaken={shotsTaken}
               />
             </div>
           ))}

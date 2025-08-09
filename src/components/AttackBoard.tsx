@@ -2,24 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { Grid } from "./Grid";
-import { attackCell, fetchAllShots } from "../services/shotService";
+import { attackCell } from "../services/shotService";
+import { generateInitialBoard } from "../lib/shared";
 import cloneDeep from "lodash.clonedeep";
 
-const generateInitalBoard = () => {
-  const board = [];
-
-  for (let y = 9; y >= 0; y--) {
-    const row = [];
-
-    for (let x = 0; x < 10; x++) {
-      row.push({ x, y, status: "intact", isShipAvailable: false });
-    }
-
-    board.push(row);
-  }
-
-  return board;
-};
 
 function updateCellStatus(
   cells: Cell[][],
@@ -45,8 +31,15 @@ function updateCellStatus(
   return cells;
 }
 
+interface IShot {
+  x: number;
+  y: number;
+  status: string;
+}
+
 interface IAttackBoardProps {
   playerId: number;
+  initialShotsTaken: IShot[];
 }
 
 interface Cell {
@@ -56,36 +49,50 @@ interface Cell {
   isShipAvailable: boolean;
 }
 
-export function AttackBoard({ playerId }: IAttackBoardProps) {
-  // used lazy initialization to improve performance
-  const [coordinates, setcoordinates] = useState(generateInitalBoard);
+export function AttackBoard({
+  playerId,
+  initialShotsTaken,
+}: IAttackBoardProps) {
+  const [coordinates, setCoordinates] = useState(() => {
+    const initialBoard = generateInitialBoard();
+    // Deep clone the board before mutating to avoid state mutation issues
+    return !initialShotsTaken ? initialBoard : updateCellStatus(cloneDeep(initialBoard), initialShotsTaken);
+  });
 
-  useEffect(() => {
-    const getShots = async () => {
-      const response = await fetchAllShots(playerId);
+  const [loading, setLoading] = useState(false);
+
+  // useEffect(() => {
+  //   // Deep clone the board before mutating to avoid state mutation issues
+  //   const clonedCoordinates = cloneDeep(coordinates);
+
+  //   const updatedCoordinates = updateCellStatus(
+  //     clonedCoordinates,
+  //     initialShotsTaken
+  //   );
+  //   setCoordinates(updatedCoordinates);
+  // }, []);
+
+  const onClickCell = async ({ x, y }: Record<string, number>) => {
+    if (loading) return;
+    setLoading(true);
+    try {
+      const response = await attackCell(playerId, { x, y });
       // Deep clone the board before mutating to avoid state mutation issues
       const clonedCoordinates = cloneDeep(coordinates);
 
-      const updatedCoordinates = updateCellStatus(clonedCoordinates, response);
-      setcoordinates(updatedCoordinates);
-    };
-    getShots();
-  }, []);
-
-  const onClickCell = async ({ x, y }: Record<string, number>) => {
-    const response = await attackCell(playerId, { x, y });
-
-    // Deep clone the board before mutating to avoid state mutation issues
-    const clonedCoordinates = cloneDeep(coordinates);
-
-    const updatedCoordinates = updateCellStatus(clonedCoordinates, [response]);
-    setcoordinates(updatedCoordinates);
+      const updatedCoordinates = updateCellStatus(clonedCoordinates, [
+        response,
+      ]);
+      setCoordinates(updatedCoordinates);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <>
       <div className="flex flex-col items-center">
-        <Grid coordinates={coordinates} onClickCell={onClickCell} />
+        <Grid coordinates={coordinates} onClickCell={onClickCell} loading={loading}/>
       </div>
     </>
   );

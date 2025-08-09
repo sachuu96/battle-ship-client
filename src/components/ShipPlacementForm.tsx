@@ -1,9 +1,47 @@
+"use client";
+
+import { useState , useEffect} from "react";
+
+interface ICell {
+  x: string | number;
+  y: string | number;
+}
+
+interface IShipPlacementFormProps {
+  handleChange: (index: number, axis: "x" | "y", value: string) => void;
+  cells: ICell[];
+  title: string;
+  description: string;
+}
+
 const ShipPlacementForm = ({
   handleChange,
   cells,
   title,
   description,
-}: any) => {
+}: IShipPlacementFormProps) => {
+  const [errors, setErrors] = useState<{ x?: string; y?: string }[]>(
+    cells.map(() => ({}))
+  );
+
+  const validateValue = (value: string) => {
+    // coordinates are required
+    if (value === "") return "Required";
+    const num = Number(value);
+    return "";
+  };
+
+  // Validation function should be triggered when ever cell is changed
+  useEffect(() => {
+    const newErrors = cells.map((cell) => {
+      return {
+        x: validateValue(cell.x as string),
+        y: validateValue(cell.y as string),
+      };
+    });
+    setErrors(newErrors);
+  }, [cells]);
+
   return (
     <>
       <h3 className="text-xl font-bold text-gray-800 mb-4">{title}</h3>
@@ -25,9 +63,20 @@ const ShipPlacementForm = ({
                 min="0"
                 max="9"
                 value={cell.x}
-                onChange={(e) => handleChange(index, "x", e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                onChange={(e) =>
+                  handleChange(index, "x", e.target.value)
+                }
+                className={`w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 ${
+                  errors[index]?.x
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-300 focus:ring-blue-500"
+                }`}
               />
+              {errors[index]?.x && (
+                <p className="mt-1 text-xs text-red-600">
+                  {errors[index].x}
+                </p>
+              )}
             </div>
 
             <div className="w-1/2">
@@ -39,16 +88,25 @@ const ShipPlacementForm = ({
                 min="0"
                 max="9"
                 value={cell.y}
-                onChange={(e) => handleChange(index, "y", e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                onChange={(e) =>
+                  handleChange(index, "y", e.target.value)
+                }
+                className={`w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 ${
+                  errors[index]?.y
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-300 focus:ring-blue-500"
+                }`}
               />
+              {errors[index]?.y && (
+                <p className="mt-1 text-xs text-red-600">
+                  {errors[index].y}
+                </p>
+              )}
             </div>
           </div>
         </div>
       ))}
-
-      
-      </>
+    </>
   );
 };
 

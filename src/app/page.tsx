@@ -1,6 +1,7 @@
 import { Game } from "../components/Game";
 import { fetchPlayers } from "../services/playerService";
 import { fetchShipPlacement } from "../services/shipService";
+import { fetchAllShots } from "../services/shotService";
 
 interface IPlayer {
   id: number;
@@ -14,6 +15,7 @@ export default async function GamePage() {
     players.map(async (player: IPlayer) => ({
       ...player,
       shipPlacement: await fetchShipPlacement(player.id),
+      shotsTaken: await fetchAllShots(player.id)
     }))
   );
 

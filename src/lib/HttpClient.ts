@@ -68,7 +68,7 @@ class HttpClient {
       HttpClient.instance.interceptors.request.use(
         (config) => {
           // TODO: harcoded game ID for now - since SSR can not access local storage. use cookies?
-          config.headers["session"] = 1;
+          config.headers["session"] = 2;
 
           return config;
         },

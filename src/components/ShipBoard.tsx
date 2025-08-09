@@ -2,23 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { Grid } from './Grid'
+import { generateInitialBoard } from "../lib/shared";
 import cloneDeep from "lodash.clonedeep";
 
-const generateInitalBoard = () => {
-  const board = [];
-
-  for (let y = 9; y >= 0; y--) {
-    const row = [];
-
-    for (let x = 0; x < 10; x++) {
-      row.push({ x, y, status: "intact", isShipAvailable: false });
-    }
-
-    board.push(row);
-  }
-
-  return board;
-};
 
 function markShipCells(cells: Cell[][], shipCells: { x: number; y: number }[]) {
   // Create a Set of keys for fast lookup
@@ -52,7 +38,7 @@ interface Cell {
 
 export function ShipBoard({ shipPlacement }: IShipBoardProps) {
   // used lazy initialization to improve performance
-  const [coordinates, setcoordinates] = useState(generateInitalBoard);
+  const [coordinates, setcoordinates] = useState(generateInitialBoard);
 
   useEffect(() => {
     if (shipPlacement && shipPlacement.length > 0) {
