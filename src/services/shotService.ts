@@ -13,7 +13,7 @@ export async function getShotsCount(playerId: number, options?: GetShotOptions) 
   const axios = HttpClient.getInstance();
 
   try {
-    const response = await axios.get(`/shots/${playerId}`, {
+    const response = await axios.get(`/shots/${playerId}/count`, {
       params: options,
     });
 
@@ -44,8 +44,6 @@ export async function fetchAllShots(playerId:number){
 
   try {
     const response = await axios.get(`/shots/${playerId}`);
-
-    // console.log('response',response)
     return response.data;
   } catch (error) {
     console.error("Error fetching shot count:", error);

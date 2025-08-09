@@ -1,9 +1,9 @@
 "use client";
 import { useState } from "react";
 import { Placement } from "./Placement";
+import Shot from "./Shot";
 import { startGame } from "../services/gameService";
 
-// TODO: set proper types
 interface IGameProps {
   initialPlayers: Record<string, number>[];
 }
@@ -11,7 +11,6 @@ export const Game = ({ initialPlayers = [] }: IGameProps) => {
   const [players, setPlayers] = useState(initialPlayers);
   const [isLoading, setIsLoading] = useState(false);
 
-  //   TODO: add loading and error states for better UX
   const onClick = async () => {
     try {
       setIsLoading(true);
@@ -34,15 +33,16 @@ export const Game = ({ initialPlayers = [] }: IGameProps) => {
             onClick={onClick}
             disabled={isLoading}
           >
-            {isLoading ? 'Setting up game...' :'Start Game'}
+            {isLoading ? "Setting up game..." : "Start Game"}
           </button>
         </div>
       )}
-
+      <br />
       {players && players.length > 0 && (
         <div className="w-full flex flex-wrap justify-center gap-12">
           {players.map(({ id, shipPlacement, shotsTaken }) => (
             <div key={id} className="flex flex-col items-center gap-6">
+              <Shot playerId={id} />
               <h4 className="text-2xl font-bold mb-4 text-center">
                 Player ID: {id}
               </h4>
