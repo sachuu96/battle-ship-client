@@ -6,11 +6,9 @@ import { startGame } from "../services/gameService";
 // TODO: set proper types
 interface IGameProps {
   initialPlayers: Record<string, number>[];
-  initialShipPlacements: any;
 }
 export const Game = ({
   initialPlayers = [],
-  initialShipPlacements = [],
 }: IGameProps) => {
   const [players, setPlayers] = useState(initialPlayers);
 
@@ -38,7 +36,7 @@ export const Game = ({
 
       {players && players.length > 0 && (
         <div className="w-full flex flex-wrap justify-center gap-12">
-          {players.map(({ id }) => (
+          {players.map(({ id , shipPlacement}) => (
             <div key={id} className="flex flex-col items-center gap-6">
               <h4 className="text-2xl font-bold mb-4 text-center">
                 Player ID: {id}
@@ -46,9 +44,7 @@ export const Game = ({
               <Placement
                 key={id}
                 playerId={id}
-                initialShipPlacement={initialShipPlacements.find(
-                  (placement:any) => placement.playerId === id
-                ).placement}
+                initialShipPlacement={shipPlacement}
               />
             </div>
           ))}

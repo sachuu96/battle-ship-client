@@ -5,7 +5,7 @@ export async function createShips(playerId: number,data: Record<string,any>) {
 
   try {
     const response = await axios.post(`/ships/${playerId}`,data);
-    return response.data.createdShips;
+    return response.data.shipPlacementCoordinates;
   } catch (error) {
     console.error("Error while creating ship placement:", error);
     throw error;

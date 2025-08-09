@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { Grid } from './Grid'
-import { fetchShipPlacement } from "../services/shipService";
 import cloneDeep from "lodash.clonedeep";
 
 const generateInitalBoard = () => {
@@ -37,7 +36,6 @@ function markShipCells(cells: Cell[][], shipCells: { x: number; y: number }[]) {
 }
 
 interface IShipBoardProps {
-  playerId: number;
   shipPlacement: Array<{
     shipId: number;
     x: number;
@@ -52,29 +50,19 @@ interface Cell {
   isShipAvailable: boolean;
 }
 
-export function ShipBoard({ playerId, shipPlacement }: IShipBoardProps) {
+export function ShipBoard({ shipPlacement }: IShipBoardProps) {
   // used lazy initialization to improve performance
   const [coordinates, setcoordinates] = useState(generateInitalBoard);
-  const [shipCoordinates, setShipCoordinates] = useState(shipPlacement);
 
   useEffect(() => {
-    // get ship placement coordinates for given player
-    const fetchShipcoordinates = async () => {
-      const response = await fetchShipPlacement(playerId);
-      setShipCoordinates(response);
-    };
-    fetchShipcoordinates();
-  }, []);
-
-  useEffect(() => {
-    if (shipCoordinates && shipCoordinates.length > 0) {
+    if (shipPlacement && shipPlacement.length > 0) {
       // Deep clone the board before mutating to avoid state mutation issues
       const clonedCoordinates = cloneDeep(coordinates)
 
-      const updatedCoordinates = markShipCells(clonedCoordinates, shipCoordinates);
+      const updatedCoordinates = markShipCells(clonedCoordinates, shipPlacement);
       setcoordinates(updatedCoordinates);
     }
-  }, [shipCoordinates]);
+  }, [shipPlacement]);
 
   return (
     <>

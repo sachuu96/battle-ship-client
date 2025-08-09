@@ -52,7 +52,7 @@ export const Placement = ({ playerId, initialShipPlacement }: PlacementProps) =>
 
   return (
     <>
-      {createdShipCoordinates && createdShipCoordinates.length === 0 ? (
+      {!createdShipCoordinates || createdShipCoordinates.length === 0 ? (
         <div className="p-6 bg-white rounded-xl shadow-md max-w-md mx-auto mt-8">
           <form
             onSubmit={createShipPlacement}
@@ -88,7 +88,6 @@ export const Placement = ({ playerId, initialShipPlacement }: PlacementProps) =>
         <>
           <p>Your ship placement</p>
           <ShipBoard
-            playerId={playerId}
             shipPlacement={createdShipCoordinates}
           />
           <p>Attack Board</p>
