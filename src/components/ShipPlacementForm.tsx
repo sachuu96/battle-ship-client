@@ -47,7 +47,6 @@ const ShipPlacementForm = ({
       <h3 className="text-xl font-bold text-gray-800 mb-4">{title}</h3>
       <p className="text-gray-600 mb-6">{description}</p>
 
-      {/* TODO: do basic required validation and display error */}
       {cells.map((cell: any, index: any) => (
         <div className="mb-6" key={index}>
           <h4 className="text-md font-semibold text-gray-700 mb-2">

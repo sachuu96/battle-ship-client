@@ -26,8 +26,8 @@ export const Placement = ({ playerId, initialShipPlacement, initialShotsTaken }:
   const [destroyerShip2, setDestroyerShip2] = useState(
     Array(3).fill({ x: "", y: "" })
   );
-
   const [createdShipCoordinates, setCreatedShipCoordinates] = useState(initialShipPlacement);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleCellChange = (setter: any, index: number, axis: "x" | "y", value: string) => {
     setter((prev: any) => {
@@ -47,8 +47,14 @@ export const Placement = ({ playerId, initialShipPlacement, initialShotsTaken }:
         { type: "battle", coordinates: battleShipCells },
       ],
     };
-    const createdShips = await createShips(playerId, payload);
-    setCreatedShipCoordinates(createdShips);
+    try{
+      setIsLoading(true)
+      const createdShips = await createShips(playerId, payload);
+      setCreatedShipCoordinates(createdShips);
+    }finally{
+      setIsLoading(false);
+    }
+    
   };
 
   return (
@@ -77,11 +83,12 @@ export const Placement = ({ playerId, initialShipPlacement, initialShotsTaken }:
               handleChange={(index:number, axis:"x" | "y", value:string) => handleCellChange(setDestroyerShip2, index, axis, value)}
               cells={destroyerShip2}
             />
+            {/* TODO: button should be disabled until all the validation errors are fixed */}
             <button
               type="submit"
               className="w-full px-4 py-2 rounded-md bg-blue-600 text-white font-semibold shadow-md hover:bg-blue-700 transition"
             >
-              Submit
+              {isLoading ? 'Creating ships...': 'Submit'}
             </button>
           </form>
         </div>
