@@ -1,18 +1,7 @@
 "use client";
 
 import { useState , useEffect} from "react";
-
-interface ICell {
-  x: string | number;
-  y: string | number;
-}
-
-interface IShipPlacementFormProps {
-  handleChange: (index: number, axis: "x" | "y", value: string) => void;
-  cells: ICell[];
-  title: string;
-  description: string;
-}
+import { IShipPlacementFormProps } from "../lib/interface";
 
 const ShipPlacementForm = ({
   handleChange,
@@ -35,8 +24,8 @@ const ShipPlacementForm = ({
   useEffect(() => {
     const newErrors = cells.map((cell) => {
       return {
-        x: validateValue(cell.x as string),
-        y: validateValue(cell.y as string),
+        x: validateValue((cell.x).toString()),
+        y: validateValue((cell.y).toString()),
       };
     });
     setErrors(newErrors);

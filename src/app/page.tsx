@@ -2,11 +2,7 @@ import { Game } from "../components/Game";
 import { fetchPlayers } from "../services/playerService";
 import { fetchShipPlacement } from "../services/shipService";
 import { fetchAllShots } from "../services/shotService";
-
-interface IPlayer {
-  id: number;
-  gameId: number;
-}
+import { IPlayer } from "../lib/interface";
 
 export default async function GamePage() {
   const players = await fetchPlayers();

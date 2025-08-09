@@ -5,16 +5,9 @@ import { createShips } from "../services/shipService";
 import ShipPlacementForm from "./ShipPlacementForm";
 import { ShipBoard } from "./ShipBoard";
 import { AttackBoard } from "./AttackBoard";
-import Shot from "./Shot";
+import { IPlacementProps } from "../lib/interface";
 
-// TODO: set proper types
-interface PlacementProps {
-  playerId: number;
-  initialShipPlacement: any;
-  initialShotsTaken: any;
-}
-
-export const Placement = ({ playerId, initialShipPlacement, initialShotsTaken }: PlacementProps) => {
+export const Placement = ({ playerId, initialShipPlacement, initialShotsTaken }: IPlacementProps) => {
   // length of battleship is 4
   const [battleShipCells, setBattleShipCells] = useState(
     Array(4).fill({ x: "", y: "" })
@@ -100,8 +93,6 @@ export const Placement = ({ playerId, initialShipPlacement, initialShotsTaken }:
           />
           <p>Attack Board</p>
           <AttackBoard playerId={playerId} initialShotsTaken={initialShotsTaken}/>
-
-          {/* <Shot /> */}
         </>
       )}
     </>

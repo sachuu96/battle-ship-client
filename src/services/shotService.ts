@@ -19,7 +19,7 @@ export async function getShotsCount(playerId: number, options?: GetShotOptions) 
 
     return response.data;
   } catch (error) {
-    console.error("Error fetching shot count:", error);
+    console.error("Error while fetching shot count:", error);
     throw error;
   }
 }
@@ -34,7 +34,7 @@ export async function attackCell(playerId: number, payload: CreateShot, options?
 
     return response.data;
   } catch (error) {
-    console.error("Error fetching shot count:", error);
+    console.error("Error while attacking a cell:", error);
     throw error;
   }
 }
@@ -46,7 +46,7 @@ export async function fetchAllShots(playerId:number){
     const response = await axios.get(`/shots/${playerId}`);
     return response.data;
   } catch (error) {
-    console.error("Error fetching shot count:", error);
+    console.error("Error while fetching shot details:", error);
     throw error;
   }
 }

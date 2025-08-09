@@ -3,11 +3,7 @@
 import { useState } from "react";
 import { getShotsCount } from "../services/shotService";
 
-interface IshotProps {
-  playerId: number;
-}
-
-export default function Shot({ playerId }: IshotProps) {
+export default function Shot({ playerId }: {playerId: number}) {
   const [shotDetails, setShotDetails] = useState<Record<string, any> | null>(
     null
   );
