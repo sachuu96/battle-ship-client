@@ -7,77 +7,37 @@ import { ShipBoard } from "./ShipBoard";
 import { AttackBoard } from "./AttackBoard";
 import Shot from "./Shot";
 
-
+// TODO: set proper types
 interface PlacementProps {
   playerId: number;
+  initialShipPlacement: any;
 }
 
-export const Placement = ({ playerId }: PlacementProps) => {
-  const [battleShipCells, setBattleShipCells] = useState([
-    { x: "", y: "" },
-    { x: "", y: "" },
-    { x: "", y: "" },
-    { x: "", y: "" },
-  ]);
+export const Placement = ({ playerId, initialShipPlacement }: PlacementProps) => {
+  // length of battleship is 4
+  const [battleShipCells, setBattleShipCells] = useState(
+    Array(4).fill({ x: "", y: "" })
+  );
+  // length of a destroyer ship is 5
+  const [destroyerShip1, setDestroyerShip1] = useState(
+    Array(3).fill({ x: "", y: "" })
+  );
+  const [destroyerShip2, setDestroyerShip2] = useState(
+    Array(3).fill({ x: "", y: "" })
+  );
 
-  const [destroyerShip1, setDestroyerShip1] = useState([
-    { x: "", y: "" },
-    { x: "", y: "" },
-    { x: "", y: "" },
-  ]);
+  const [createdShipCoordinates, setCreatedShipCoordinates] = useState(initialShipPlacement);
 
-  const [destroyerShip2, setDestroyerShip2] = useState([
-    { x: "", y: "" },
-    { x: "", y: "" },
-    { x: "", y: "" },
-  ]);
-
-  const [createdShipCoordinates, setCreatedShipCoordinates] = useState([]);
-
-  useEffect(() => {
-    // get ship placement cordinates for given player
-    const fetchShipCordinates = async () => {
-      const response = await fetchShipPlacement(playerId);
-      setCreatedShipCoordinates(response);
-    };
-    fetchShipCordinates();
-  }, []);
-
-  const handleBattleShipCellChange = (
-    index: number,
-    axis: "x" | "y",
-    value: string
-  ) => {
-    const newCells = [...battleShipCells];
-    newCells[index][axis] = value;
-    setBattleShipCells(newCells);
-  };
-
-  const handleFirstDestroyerShipCellChange = (
-    index: number,
-    axis: "x" | "y",
-    value: string
-  ) => {
-    const newCells = [...destroyerShip1];
-    newCells[index][axis] = value;
-    setDestroyerShip1(newCells);
-  };
-
-  const handleSecondDestroyerShipCellChange = (
-    index: number,
-    axis: "x" | "y",
-    value: string
-  ) => {
-    const newCells = [...destroyerShip2];
-    newCells[index][axis] = value;
-    setDestroyerShip2(newCells);
+  const handleCellChange = (setter: any, index: number, axis: "x" | "y", value: string) => {
+    setter((prev: any) => {
+      const newCells = [...prev];
+      newCells[index] = { ...newCells[index], [axis]: value };
+      return newCells;
+    });
   };
 
   const createShipPlacement = async (e: React.FormEvent) => {
     e.preventDefault();
-    // console.log("Submitted battleShipCells:", battleShipCells);
-    // console.log("Submitted destroyerShip1:", destroyerShip1);
-    // console.log("Submitted destroyerShip2:", destroyerShip2);
 
     const payload = {
       ships: [
@@ -101,19 +61,19 @@ export const Placement = ({ playerId }: PlacementProps) => {
             <ShipPlacementForm
               title="Create Battleship"
               description="Enter the X and Y coordinates for each of the 4 cells (values 0–9)."
-              handleChange={handleBattleShipCellChange}
+              handleChange={(index:number, axis:"x" | "y", value:string) => handleCellChange(setBattleShipCells, index, axis, value)}
               cells={battleShipCells}
             />
             <ShipPlacementForm
               title="Create destroyer ship - 1"
               description="Enter the X and Y coordinates for each of the 3 cells (values 0–9)."
-              handleChange={handleFirstDestroyerShipCellChange}
+              handleChange={(index:number, axis:"x" | "y", value:string) => handleCellChange(setDestroyerShip1, index, axis, value)}
               cells={destroyerShip1}
             />
             <ShipPlacementForm
               title="Create destroyer ship - 2"
               description="Enter the X and Y coordinates for each of the 3 cells (values 0–9)."
-              handleChange={handleSecondDestroyerShipCellChange}
+              handleChange={(index:number, axis:"x" | "y", value:string) => handleCellChange(setDestroyerShip2, index, axis, value)}
               cells={destroyerShip2}
             />
             <button
@@ -132,10 +92,9 @@ export const Placement = ({ playerId }: PlacementProps) => {
             shipPlacement={createdShipCoordinates}
           />
           <p>Attack Board</p>
-          <AttackBoard playerId={playerId}/> 
+          <AttackBoard playerId={playerId} />
 
-        <Shot />
-
+          {/* <Shot /> */}
         </>
       )}
     </>

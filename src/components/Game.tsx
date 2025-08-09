@@ -1,34 +1,17 @@
 "use client";
-import { useEffect, useState } from "react";
-import { ShipBoard } from "./ShipBoard";
+import { useState } from "react";
 import { Placement } from "./Placement";
-import { startGame, getGame } from "../services/gameService";
-import { fetchPlayers } from "../services/playerService";
+import { startGame } from "../services/gameService";
 
-export function Welcome() {
-  const [players, setPlayers] = useState([]);
-  const [gameStatus, setGameStatus] = useState(null);
+// TODO: set proper types
+interface IGameProps {
+  initialPlayers: Record<string, number>[];
+  initialShipPlacements: any;
+}
+export const Game = ({ initialPlayers = [], initialShipPlacements = [] }: IGameProps) => {
+  const [players, setPlayers] = useState(initialPlayers);
 
-  useEffect(() => {
-    // chain since response of first api call is dependent to the next one.
-    getGame()
-      .then((data) => {
-        if (data) {
-          fetchPlayers()
-            .then((players) => {
-              setPlayers(players);
-            })
-            .catch((error) => {
-              // TODO: proper error display for UI
-              console.log("error while fetching players: ", error);
-            });
-        }
-      })
-      .catch((error) => {
-        console.log("error while fetching game: ", error);
-      });
-  }, []);
-
+  //   TODO: add loading and error states for better UX
   const onClick = async () => {
     const players = await startGame();
     setPlayers(players);
@@ -39,7 +22,6 @@ export function Welcome() {
       <h1 className="text-4xl font-extrabold mb-8 text-center text-gray-800">
         Battle Ship Game
       </h1>
-
       {players.length === 0 && (
         <div className="flex justify-center mb-10">
           <button
@@ -51,20 +33,18 @@ export function Welcome() {
         </div>
       )}
 
-      {players.length > 0 && (
+      {players && players.length > 0 && (
         <div className="w-full flex flex-wrap justify-center gap-12">
           {players.map(({ id }) => (
             <div key={id} className="flex flex-col items-center gap-6">
               <h4 className="text-2xl font-bold mb-4 text-center">
                 Player ID: {id}
               </h4>
-              <Placement playerId={id} />
-              {/* Show the board only once the ship placement is successfully completed*/}
-              {/* <Board playerId={id} /> */}
+              <Placement key={id} playerId={id} initialShipPlacement={initialShipPlacements}/>
             </div>
           ))}
         </div>
       )}
     </div>
   );
-}
+};

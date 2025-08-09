@@ -5,7 +5,7 @@ export async function startGame() {
 
   try {
     const response = await axios.post("/games");
-    localStorage.setItem("session", response.data.gameId);
+    // TODO: set response.data.gameId to cookies?
     return response.data.players;
   } catch (error) {
     console.error("Error fetching shot count:", error);
