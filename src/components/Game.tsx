@@ -8,7 +8,10 @@ interface IGameProps {
   initialPlayers: Record<string, number>[];
   initialShipPlacements: any;
 }
-export const Game = ({ initialPlayers = [], initialShipPlacements = [] }: IGameProps) => {
+export const Game = ({
+  initialPlayers = [],
+  initialShipPlacements = [],
+}: IGameProps) => {
   const [players, setPlayers] = useState(initialPlayers);
 
   //   TODO: add loading and error states for better UX
@@ -40,7 +43,13 @@ export const Game = ({ initialPlayers = [], initialShipPlacements = [] }: IGameP
               <h4 className="text-2xl font-bold mb-4 text-center">
                 Player ID: {id}
               </h4>
-              <Placement key={id} playerId={id} initialShipPlacement={initialShipPlacements}/>
+              <Placement
+                key={id}
+                playerId={id}
+                initialShipPlacement={initialShipPlacements.find(
+                  (placement:any) => placement.playerId === id
+                ).placement}
+              />
             </div>
           ))}
         </div>

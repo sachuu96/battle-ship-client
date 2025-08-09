@@ -36,7 +36,7 @@ function markShipCells(cells: Cell[][], shipCells: { x: number; y: number }[]) {
   return cells;
 }
 
-interface BoardProps {
+interface IShipBoardProps {
   playerId: number;
   shipPlacement: Array<{
     shipId: number;
@@ -52,7 +52,7 @@ interface Cell {
   isShipAvailable: boolean;
 }
 
-export function ShipBoard({ playerId, shipPlacement }: BoardProps) {
+export function ShipBoard({ playerId, shipPlacement }: IShipBoardProps) {
   // used lazy initialization to improve performance
   const [coordinates, setcoordinates] = useState(generateInitalBoard);
   const [shipCoordinates, setShipCoordinates] = useState(shipPlacement);
