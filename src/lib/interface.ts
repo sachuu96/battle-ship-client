@@ -16,7 +16,7 @@ export interface IShot {
   status: string;
 }
 
-export interface IPlayer extends IShipPlacement {
+export interface IPlayer extends IShipBoardProps {
   id: number;
   gameId: number;
   shotsTaken: IShot[];

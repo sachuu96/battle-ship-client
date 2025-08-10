@@ -14,3 +14,10 @@ export const GAME_STATUS = {
     IN_PROGRESS : "inProgress",
     COMPLETED: "completed"
 }
+
+export const PATH = {
+    GAMES:"games",
+    PLAYERS:"players",
+    SHIPS:"ships",
+    SHOTS:"shots"
+}
