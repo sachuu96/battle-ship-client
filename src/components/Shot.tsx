@@ -13,6 +13,7 @@ export default function Shot({ playerId }: { playerId: number }) {
 
   const onCheckStatus = async () => {
     try {
+      setError(null);
       setIsLoading(true);
       const shots = await getShotsCount(playerId);
       setShotDetails(shots);
@@ -21,7 +22,6 @@ export default function Shot({ playerId }: { playerId: number }) {
       throw error;
     } finally {
       setIsLoading(false);
-      setError(null);
     }
   };
 

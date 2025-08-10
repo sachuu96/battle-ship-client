@@ -13,12 +13,12 @@ export async function startGame() {
   }
 }
 
-export async function getGame() {
+export async function filterGames(options?: { status: string }) {
   const axios = HttpClient.getInstance();
 
   try {
-    const response = await axios.get("/games");
-    return response.data;
+    const response = await axios.get("/games", { params: options });
+    return response.data[0];
   } catch (error) {
     console.error("Error while fetching game details:", error);
     throw error;

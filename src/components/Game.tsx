@@ -17,6 +17,7 @@ export const Game = ({
 
   const onClick = async () => {
     try {
+      setError(null);
       setIsLoading(true);
       const players = await startGame();
       setPlayers(players);
@@ -24,7 +25,6 @@ export const Game = ({
       setError(SERVER_ERROR);
       throw error;
     } finally {
-      setError(null);
       setIsLoading(false);
     }
   };

@@ -24,6 +24,7 @@ export function AttackBoard({
   const [error, setError] = useState<string | null>(null);
 
   const onClickCell = async ({ x, y }: Record<string, number>) => {
+    setError(null);
     setLoading(true);
     try {
       const response = await attackCell(playerId, { x, y });
@@ -39,7 +40,6 @@ export function AttackBoard({
       throw error;
     } finally {
       setLoading(false);
-      setError(null);
     }
   };
 

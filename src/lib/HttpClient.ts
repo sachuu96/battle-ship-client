@@ -18,8 +18,9 @@ class HttpClient {
 
       HttpClient.instance.interceptors.request.use(
         (config) => {
-          // TODO: hardcoded game ID for now - use cookies/session storage in future
+          
           config.headers["session"] = 1;
+        
           return config;
         },
         (error) => Promise.reject(error)
@@ -28,11 +29,6 @@ class HttpClient {
 
     return HttpClient.instance;
   }
-
-  // public static setSessionToken(token: string) {
-  //   const axiosInstance = this.getInstance();
-  //   axiosInstance.defaults.headers.common["session"] = token;
-  // }
 }
 
 export default HttpClient;

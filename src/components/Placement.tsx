@@ -6,7 +6,7 @@ import ShipPlacementForm from "./ShipPlacementForm";
 import { ShipBoard } from "./ShipBoard";
 import { AttackBoard } from "./AttackBoard";
 import { IPlacementProps } from "../lib/interface";
-import { SERVER_ERROR, shipTypes } from "../lib/const";
+import { SERVER_ERROR, SHIP_TYPES } from "../lib/const";
 
 export const Placement = ({
   playerId,
@@ -30,8 +30,6 @@ export const Placement = ({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // TODO: bring AttackBoard cell coordinates to this parent component (with button click action) and update ShipBoard cell coordinates also with cell's status
-
   const handleCellChange = (
     setter: any,
     index: number,
@@ -50,12 +48,13 @@ export const Placement = ({
 
     const payload = {
       ships: [
-        { type: shipTypes.DESTROYER, coordinates: destroyerShip1 },
-        { type: shipTypes.DESTROYER, coordinates: destroyerShip2 },
-        { type: shipTypes.BATTLE, coordinates: battleShipCells },
+        { type: SHIP_TYPES.DESTROYER, coordinates: destroyerShip1 },
+        { type: SHIP_TYPES.DESTROYER, coordinates: destroyerShip2 },
+        { type: SHIP_TYPES.BATTLE, coordinates: battleShipCells },
       ],
     };
     try {
+      setError(null);
       setIsLoading(true);
       const createdShips = await createShips(playerId, payload);
       setCreatedShipCoordinates(createdShips);
@@ -63,7 +62,6 @@ export const Placement = ({
       setError(SERVER_ERROR);
       throw error;
     } finally {
-      setError(null);
       setIsLoading(false);
     }
   };
