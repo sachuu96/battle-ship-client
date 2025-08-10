@@ -1,5 +1,6 @@
 import { Loader } from "./Loader";
 import { IGridProps } from "../lib/interface";
+import { CELL_STATUS } from "@/lib/const";
 
 export const Grid = ({
   coordinates,
@@ -8,17 +9,23 @@ export const Grid = ({
 }: IGridProps) => {
 
   const getCellBgColor = (status: string, isShipAvailable: boolean) => {
-    if (status === "hit") return "bg-green-400";
-    if (status === "missed") return "bg-yellow-300";
-    if (isShipAvailable) return "bg-gray-400";
+    if (isShipAvailable) {
+      if(status === CELL_STATUS.HIT) return 'bg-red-300'
+      return "bg-gray-400";
+    }
+    if (status === CELL_STATUS.HIT) return "bg-green-400";
+    if (status === CELL_STATUS.MISSED) return "bg-yellow-300";
     return "hover:bg-gray-200";
   };
 
   const generateCellContent = ({ isShipAvailable, status, x, y }: any) => {
-    if (isShipAvailable) return "Ship";
-    if (status === "missed") return "Missed";
-    if (status === "hit") return "Hit";
-    if (status === "intact") return `[${x},${y}]`;
+    if (isShipAvailable) {
+      if(status === CELL_STATUS.HIT) return "Ship hit"
+      return "Ship";
+    }
+    if (status === CELL_STATUS.MISSED) return "Missed";
+    if (status === CELL_STATUS.HIT) return "Hit";
+    return `[${x},${y}]`;
   };
   
   return (
@@ -32,16 +39,16 @@ export const Grid = ({
               return (
                 <tr key={`row-${rows}-${index}`} className="bg-gray-100">
                   {rows.map(({ x, y, isShipAvailable, status }: any) => {
-                    const isDisabled = isShipAvailable === true;
+                    // const isDisabled = isShipAvailable === true;
                     return (
                       <td
                         key={`cell-${x}-${y}`}
                         className={`border border-gray-300 px-4 py-2 text-center align-middle cursor-pointer ${getCellBgColor(
                           status,
                           isShipAvailable
-                        )} ${isDisabled ? "cursor-not-allowed" : ""}`}
+                        )} ${isShipAvailable ? "cursor-not-allowed" : ""}`}
                         onClick={() => {
-                          if (!isDisabled) {
+                          if (!isShipAvailable) {
                             onClickCell?.({ x, y });
                           }
                         }}

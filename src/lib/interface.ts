@@ -6,6 +6,10 @@ export interface IShipPlacement {
   }>;
 }
 
+export interface IShipBoardProps extends IShipPlacement{
+  opponentId: number;
+}
+
 export interface IShot {
   x: number;
   y: number;
@@ -41,6 +45,7 @@ export interface IPlacementProps {
     y: number;
   }>;
   initialShotsTaken: IShot[];
+  opponentId: number;
 }
 
 interface Cell {

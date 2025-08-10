@@ -8,7 +8,12 @@ import { AttackBoard } from "./AttackBoard";
 import { IPlacementProps } from "../lib/interface";
 import { SERVER_ERROR, shipTypes } from "../lib/const";
 
-export const Placement = ({ playerId, initialShipPlacement, initialShotsTaken }: IPlacementProps) => {
+export const Placement = ({
+  playerId,
+  initialShipPlacement,
+  initialShotsTaken,
+  opponentId
+}: IPlacementProps) => {
   // length of battleship is 4
   const [battleShipCells, setBattleShipCells] = useState(
     Array(4).fill({ x: "", y: "" })
@@ -20,13 +25,19 @@ export const Placement = ({ playerId, initialShipPlacement, initialShotsTaken }:
   const [destroyerShip2, setDestroyerShip2] = useState(
     Array(3).fill({ x: "", y: "" })
   );
-  const [createdShipCoordinates, setCreatedShipCoordinates] = useState(initialShipPlacement);
+  const [createdShipCoordinates, setCreatedShipCoordinates] =
+    useState(initialShipPlacement);
   const [isLoading, setIsLoading] = useState(false);
-  const [error,setError] = useState<string|null>(null)
+  const [error, setError] = useState<string | null>(null);
 
   // TODO: bring AttackBoard cell coordinates to this parent component (with button click action) and update ShipBoard cell coordinates also with cell's status
 
-  const handleCellChange = (setter: any, index: number, axis: "x" | "y", value: string) => {
+  const handleCellChange = (
+    setter: any,
+    index: number,
+    axis: "x" | "y",
+    value: string
+  ) => {
     setter((prev: any) => {
       const newCells = [...prev];
       newCells[index] = { ...newCells[index], [axis]: value };
@@ -41,23 +52,23 @@ export const Placement = ({ playerId, initialShipPlacement, initialShotsTaken }:
       ships: [
         { type: shipTypes.DESTROYER, coordinates: destroyerShip1 },
         { type: shipTypes.DESTROYER, coordinates: destroyerShip2 },
-        { type: shipTypes.BATTLE , coordinates: battleShipCells },
+        { type: shipTypes.BATTLE, coordinates: battleShipCells },
       ],
     };
-    try{
-      setIsLoading(true)
+    try {
+      setIsLoading(true);
       const createdShips = await createShips(playerId, payload);
       setCreatedShipCoordinates(createdShips);
-    } catch(error){
-      setError(SERVER_ERROR)
-    }finally{
-      setError(null)
+    } catch (error) {
+      setError(SERVER_ERROR);
+      throw error;
+    } finally {
+      setError(null);
       setIsLoading(false);
     }
-    
   };
 
-  if(error) return <p>{SERVER_ERROR}</p>
+  if (error) return <p>{SERVER_ERROR}</p>;
   return (
     <>
       {!createdShipCoordinates || createdShipCoordinates.length === 0 ? (
@@ -69,19 +80,25 @@ export const Placement = ({ playerId, initialShipPlacement, initialShotsTaken }:
             <ShipPlacementForm
               title="Create Battleship"
               description="Enter the X and Y coordinates for each of the 4 cells (values 0–9)."
-              handleChange={(index:number, axis:"x" | "y", value:string) => handleCellChange(setBattleShipCells, index, axis, value)}
+              handleChange={(index: number, axis: "x" | "y", value: string) =>
+                handleCellChange(setBattleShipCells, index, axis, value)
+              }
               cells={battleShipCells}
             />
             <ShipPlacementForm
               title="Create destroyer ship - 1"
               description="Enter the X and Y coordinates for each of the 3 cells (values 0–9)."
-              handleChange={(index:number, axis:"x" | "y", value:string) => handleCellChange(setDestroyerShip1, index, axis, value)}
+              handleChange={(index: number, axis: "x" | "y", value: string) =>
+                handleCellChange(setDestroyerShip1, index, axis, value)
+              }
               cells={destroyerShip1}
             />
             <ShipPlacementForm
               title="Create destroyer ship - 2"
               description="Enter the X and Y coordinates for each of the 3 cells (values 0–9)."
-              handleChange={(index:number, axis:"x" | "y", value:string) => handleCellChange(setDestroyerShip2, index, axis, value)}
+              handleChange={(index: number, axis: "x" | "y", value: string) =>
+                handleCellChange(setDestroyerShip2, index, axis, value)
+              }
               cells={destroyerShip2}
             />
             {/* TODO: button should be disabled until all the validation errors are fixed */}
@@ -89,18 +106,19 @@ export const Placement = ({ playerId, initialShipPlacement, initialShotsTaken }:
               type="submit"
               className="w-full px-4 py-2 rounded-md bg-blue-600 text-white font-semibold shadow-md hover:bg-blue-700 transition"
             >
-              {isLoading ? 'Creating ships...': 'Submit'}
+              {isLoading ? "Creating ships..." : "Submit"}
             </button>
           </form>
         </div>
       ) : (
         <>
           <p>Your ship placement</p>
-          <ShipBoard
-            shipPlacement={createdShipCoordinates}
-          />
+          <ShipBoard shipPlacement={createdShipCoordinates} opponentId={opponentId}/>
           <p>Attack Board</p>
-          <AttackBoard playerId={playerId} initialShotsTaken={initialShotsTaken}/>
+          <AttackBoard
+            playerId={playerId}
+            initialShotsTaken={initialShotsTaken}
+          />
         </>
       )}
     </>

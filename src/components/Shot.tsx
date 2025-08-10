@@ -18,6 +18,7 @@ export default function Shot({ playerId }: { playerId: number }) {
       setShotDetails(shots);
     } catch (error) {
       setError(SERVER_ERROR);
+      throw error;
     } finally {
       setIsLoading(false);
       setError(null);

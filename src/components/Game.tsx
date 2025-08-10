@@ -52,7 +52,7 @@ export const Game = ({
           <br />
           {players && players.length > 0 && (
             <div className="w-full flex flex-wrap justify-center gap-12">
-              {players.map(({ id, shipPlacement, shotsTaken }) => (
+              {players.map(({ id, shipPlacement, shotsTaken },index) => (
                 <div key={id} className="flex flex-col items-center gap-6">
                   <Shot playerId={id} />
                   <h4 className="text-2xl font-bold mb-4 text-center">
@@ -61,6 +61,8 @@ export const Game = ({
                   <Placement
                     key={id}
                     playerId={id}
+                    //TODO: This is not scalable - for more than 2 players per game
+                    opponentId={players[index === 0 ? 1 : index].id}
                     initialShipPlacement={shipPlacement}
                     initialShotsTaken={shotsTaken}
                   />
