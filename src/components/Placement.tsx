@@ -6,6 +6,7 @@ import ShipPlacementForm from "./ShipPlacementForm";
 import { ShipBoard } from "./ShipBoard";
 import { AttackBoard } from "./AttackBoard";
 import { IPlacementProps } from "../lib/interface";
+import { SERVER_ERROR, shipTypes } from "../lib/const";
 
 export const Placement = ({ playerId, initialShipPlacement, initialShotsTaken }: IPlacementProps) => {
   // length of battleship is 4
@@ -21,6 +22,9 @@ export const Placement = ({ playerId, initialShipPlacement, initialShotsTaken }:
   );
   const [createdShipCoordinates, setCreatedShipCoordinates] = useState(initialShipPlacement);
   const [isLoading, setIsLoading] = useState(false);
+  const [error,setError] = useState<string|null>(null)
+
+  // TODO: bring AttackBoard cell coordinates to this parent component (with button click action) and update ShipBoard cell coordinates also with cell's status
 
   const handleCellChange = (setter: any, index: number, axis: "x" | "y", value: string) => {
     setter((prev: any) => {
@@ -35,21 +39,25 @@ export const Placement = ({ playerId, initialShipPlacement, initialShotsTaken }:
 
     const payload = {
       ships: [
-        { type: "destroyer", coordinates: destroyerShip1 },
-        { type: "destroyer", coordinates: destroyerShip2 },
-        { type: "battle", coordinates: battleShipCells },
+        { type: shipTypes.DESTROYER, coordinates: destroyerShip1 },
+        { type: shipTypes.DESTROYER, coordinates: destroyerShip2 },
+        { type: shipTypes.BATTLE , coordinates: battleShipCells },
       ],
     };
     try{
       setIsLoading(true)
       const createdShips = await createShips(playerId, payload);
       setCreatedShipCoordinates(createdShips);
+    } catch(error){
+      setError(SERVER_ERROR)
     }finally{
+      setError(null)
       setIsLoading(false);
     }
     
   };
 
+  if(error) return <p>{SERVER_ERROR}</p>
   return (
     <>
       {!createdShipCoordinates || createdShipCoordinates.length === 0 ? (

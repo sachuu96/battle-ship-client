@@ -4,6 +4,7 @@ import { Placement } from "./Placement";
 import Shot from "./Shot";
 import { startGame } from "../services/gameService";
 import { IPlayer } from "../lib/interface";
+import { SERVER_ERROR } from "../lib/const";
 
 export const Game = ({
   initialPlayers = [],
@@ -12,19 +13,18 @@ export const Game = ({
 }) => {
   const [players, setPlayers] = useState(initialPlayers);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   const onClick = async () => {
     try {
-      setError("");
       setIsLoading(true);
       const players = await startGame();
       setPlayers(players);
     } catch (error) {
-      setError("Error while creating game");
+      setError(SERVER_ERROR);
       throw error;
     } finally {
-      setError("");
+      setError(null);
       setIsLoading(false);
     }
   };
@@ -32,7 +32,7 @@ export const Game = ({
   return (
     <>
       {error ? (
-        error
+        <p>{SERVER_ERROR}</p>
       ) : (
         <div className="min-h-screen bg-gray-100 px-4 py-8">
           <h1 className="text-4xl font-extrabold mb-8 text-center text-gray-800">

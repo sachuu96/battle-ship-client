@@ -19,7 +19,7 @@ class HttpClient {
       HttpClient.instance.interceptors.request.use(
         (config) => {
           // TODO: hardcoded game ID for now - use cookies/session storage in future
-          config.headers["session"] = 1;
+          config.headers["session"] = 2;
           return config;
         },
         (error) => Promise.reject(error)
