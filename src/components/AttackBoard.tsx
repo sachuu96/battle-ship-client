@@ -1,92 +1,61 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Grid } from "./Grid";
-import { attackCell, fetchAllShots } from "../services/shotService";
+import { attackCell } from "../services/shotService";
+import { generateInitialBoard, updateCellStatus } from "../lib/util";
+import { SERVER_ERROR } from "../lib/const";
 import cloneDeep from "lodash.clonedeep";
+import { IAttackBoardProps } from "../lib/interface";
 
-const generateInitalBoard = () => {
-  const board = [];
+export function AttackBoard({
+  playerId,
+  initialShotsTaken,
+}: IAttackBoardProps) {
+  const [coordinates, setCoordinates] = useState(() => {
+    const initialBoard = generateInitialBoard();
+    // Deep clone the board before mutating to avoid state mutation issues
+    return !initialShotsTaken
+      ? initialBoard
+      : updateCellStatus(cloneDeep(initialBoard), initialShotsTaken);
+  });
 
-  for (let y = 9; y >= 0; y--) {
-    const row = [];
-
-    for (let x = 0; x < 10; x++) {
-      row.push({ x, y, status: "intact", isShipAvailable: false });
-    }
-
-    board.push(row);
-  }
-
-  return board;
-};
-
-function updateCellStatus(
-  cells: Cell[][],
-  attackedCells: { x: number; y: number; status: string }[]
-) {
-  // Create a Set of keys for fast lookup
-  const attackedCellKeys = new Set(
-    attackedCells.map(({ x, y }) => `${x},${y}`)
-  );
-
-  for (const row of cells) {
-    for (const cell of row) {
-      const key = `${cell.x},${cell.y}`;
-      if (attackedCellKeys.has(key)) {
-        const filteredCell = attackedCells.find(
-          (attackedCell) =>
-            attackedCell.x === cell.x && attackedCell.y === cell.y
-        );
-        cell.status = filteredCell?.status || "intact";
-      }
-    }
-  }
-  return cells;
-}
-
-interface IAttackBoardProps {
-  playerId: number;
-}
-
-interface Cell {
-  x: number;
-  y: number;
-  status: string;
-  isShipAvailable: boolean;
-}
-
-export function AttackBoard({ playerId }: IAttackBoardProps) {
-  // used lazy initialization to improve performance
-  const [coordinates, setcoordinates] = useState(generateInitalBoard);
-
-  useEffect(() => {
-    const getShots = async () => {
-      const response = await fetchAllShots(playerId);
-      // Deep clone the board before mutating to avoid state mutation issues
-      const clonedCoordinates = cloneDeep(coordinates);
-
-      const updatedCoordinates = updateCellStatus(clonedCoordinates, response);
-      setcoordinates(updatedCoordinates);
-    };
-    getShots();
-  }, []);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const onClickCell = async ({ x, y }: Record<string, number>) => {
-    const response = await attackCell(playerId, { x, y });
+    setLoading(true);
+    try {
+      const response = await attackCell(playerId, { x, y });
+      //TODO: Deep clone the board before mutating to avoid state mutation issues. but it's a heavy operation. check other options
+      const clonedCoordinates = cloneDeep(coordinates);
 
-    // Deep clone the board before mutating to avoid state mutation issues
-    const clonedCoordinates = cloneDeep(coordinates);
-
-    const updatedCoordinates = updateCellStatus(clonedCoordinates, [response]);
-    setcoordinates(updatedCoordinates);
+      const updatedCoordinates = updateCellStatus(clonedCoordinates, [
+        response,
+      ]);
+      setCoordinates(updatedCoordinates);
+    } catch (error) {
+      setError(SERVER_ERROR);
+      throw error;
+    } finally {
+      setLoading(false);
+      setError(null);
+    }
   };
 
   return (
     <>
-      <div className="flex flex-col items-center">
-        <Grid coordinates={coordinates} onClickCell={onClickCell} />
-      </div>
+      {error ? (
+        <p>{SERVER_ERROR}</p>
+      ) : (
+        <div className="flex flex-col items-center">
+          <Grid
+            coordinates={coordinates}
+            onClickCell={onClickCell}
+            loading={loading}
+          />
+        </div>
+      )}
     </>
   );
 }

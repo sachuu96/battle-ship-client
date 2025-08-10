@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosResponse } from "axios";
+import axios, { AxiosInstance } from "axios";
 
 class HttpClient {
   private static instance: AxiosInstance;
@@ -18,30 +18,21 @@ class HttpClient {
 
       HttpClient.instance.interceptors.request.use(
         (config) => {
-          if (typeof window !== "undefined") {
-            const token = localStorage.getItem("session");
-            if (token) {
-              config.headers["session"] = token;
-            }
-          }
+          // TODO: hardcoded game ID for now - use cookies/session storage in future
+          config.headers["session"] = 1;
           return config;
         },
-        (error) => {
-          return Promise.reject(error);
-        }
-      );
-
-      HttpClient.instance.interceptors.response.use(
-        (response: AxiosResponse) => response,
-        (error) => {
-          // TODO: handle errors globally here
-          return Promise.reject(error);
-        }
+        (error) => Promise.reject(error)
       );
     }
 
     return HttpClient.instance;
   }
+
+  // public static setSessionToken(token: string) {
+  //   const axiosInstance = this.getInstance();
+  //   axiosInstance.defaults.headers.common["session"] = token;
+  // }
 }
 
 export default HttpClient;

@@ -1,85 +1,64 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Grid } from './Grid'
-import { fetchShipPlacement } from "../services/shipService";
+import { Grid } from "./Grid";
+import { generateInitialBoard, markShipCells, updateCellStatus } from "../lib/util";
 import cloneDeep from "lodash.clonedeep";
+import { IShipBoardProps } from "../lib/interface";
+import { fetchAllShots } from "../services/shotService";
+import { CELL_STATUS, SERVER_ERROR } from "../lib/const";
 
-const generateInitalBoard = () => {
-  const board = [];
-
-  for (let y = 9; y >= 0; y--) {
-    const row = [];
-
-    for (let x = 0; x < 10; x++) {
-      row.push({ x, y, status: "intact", isShipAvailable: false });
-    }
-
-    board.push(row);
-  }
-
-  return board;
-};
-
-function markShipCells(cells: Cell[][], shipCells: { x: number; y: number }[]) {
-  // Create a Set of keys for fast lookup
-  const shipKeys = new Set(shipCells.map(({ x, y }) => `${x},${y}`));
-
-  for (const row of cells) {
-    for (const cell of row) {
-      const key = `${cell.x},${cell.y}`;
-      if (shipKeys.has(key)) {
-        cell.isShipAvailable = true;
-      }
-    }
-  }
-  return cells;
-}
-
-interface BoardProps {
-  playerId: number;
-  shipPlacement: Array<{
-    shipId: number;
-    x: number;
-    y: number;
-  }>;
-}
-
-interface Cell {
-  x: number;
-  y: number;
-  status: string;
-  isShipAvailable: boolean;
-}
-
-export function ShipBoard({ playerId, shipPlacement }: BoardProps) {
+export function ShipBoard({ shipPlacement, opponentId }: IShipBoardProps) {
   // used lazy initialization to improve performance
-  const [coordinates, setcoordinates] = useState(generateInitalBoard);
-  const [shipCoordinates, setShipCoordinates] = useState(shipPlacement);
+  const [coordinates, setcoordinates] = useState(generateInitialBoard);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // get ship placement coordinates for given player
-    const fetchShipcoordinates = async () => {
-      const response = await fetchShipPlacement(playerId);
-      setShipCoordinates(response);
-    };
-    fetchShipcoordinates();
-  }, []);
-
-  useEffect(() => {
-    if (shipCoordinates && shipCoordinates.length > 0) {
+    if (shipPlacement && shipPlacement.length > 0) {
       // Deep clone the board before mutating to avoid state mutation issues
-      const clonedCoordinates = cloneDeep(coordinates)
+      const clonedCoordinates = cloneDeep(coordinates);
 
-      const updatedCoordinates = markShipCells(clonedCoordinates, shipCoordinates);
+      const updatedCoordinates = markShipCells(
+        clonedCoordinates,
+        shipPlacement
+      );
       setcoordinates(updatedCoordinates);
     }
-  }, [shipCoordinates]);
+  }, [shipPlacement]);
 
+  const onClickUpdateShipBoard = async () => {
+    try{
+      setIsLoading(true)
+      const opponetShots = await fetchAllShots(opponentId, { status: CELL_STATUS.HIT });
+      // Deep clone the board before mutating to avoid state mutation issues
+      const clonedCoordinates = cloneDeep(coordinates);
+  
+      const updatedCoordinates = updateCellStatus(
+        clonedCoordinates,
+        opponetShots
+      );
+      setcoordinates(updatedCoordinates);
+    }catch(error){
+      setError(SERVER_ERROR)
+      throw error;
+    }finally{
+      setIsLoading(false)
+      setError(null)
+    }
+  };
+
+  if(error) return <p>{SERVER_ERROR}</p>
   return (
     <>
+      <button
+        onClick={onClickUpdateShipBoard}
+        className="w-full px-4 py-2 rounded-md bg-blue-600 text-white font-semibold shadow-md hover:bg-blue-700 transition"
+      >
+        {isLoading ? "Loading..." : "Update ship board with opponent's hits"}
+      </button>
       <div className="flex flex-col items-center">
-        <Grid coordinates={coordinates}/>
+        <Grid coordinates={coordinates} />
       </div>
     </>
   );

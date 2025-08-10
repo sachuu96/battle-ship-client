@@ -5,10 +5,10 @@ export async function startGame() {
 
   try {
     const response = await axios.post("/games");
-    localStorage.setItem("session", response.data.gameId);
+    // TODO: set response.data.gameId to cookies?
     return response.data.players;
   } catch (error) {
-    console.error("Error fetching shot count:", error);
+    console.error("Error while creating game:", error);
     throw error;
   }
 }
@@ -20,7 +20,7 @@ export async function getGame() {
     const response = await axios.get("/games");
     return response.data;
   } catch (error) {
-    console.error("Error fetching game details:", error);
+    console.error("Error while fetching game details:", error);
     throw error;
   }
 }
