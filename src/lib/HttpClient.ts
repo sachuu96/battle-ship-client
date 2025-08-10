@@ -19,6 +19,8 @@ class HttpClient {
       HttpClient.instance.interceptors.request.use(
         (config) => {
           
+          // TODO: set this to cookies when creating the game and get it from there
+          // will have to incrment manually to start a new game for this demo
           config.headers["session"] = 1;
         
           return config;

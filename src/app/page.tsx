@@ -19,6 +19,7 @@ export default async function GamePage() {
         ...player,
         shipPlacement: await fetchShipPlacement(player.id),
         shotsTaken: await fetchAllShots(player.id),
+        opponentId:player.opponentId
       }))
     );
 
